@@ -1,0 +1,161 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: ECMWF API
+  description: Sample API using the ECMWF Wrapper library
+  version: "1.0.0"
+# the domain of the service
+host: 0.0.0.0:5055
+# will be prefixed to all paths
+produces:
+  - application/json
+paths:
+  /:
+    get:
+      summary: Check if the API is running.
+      description: |
+        The Products endpoint returns a simple Greet message to check if a connection is possible.
+      responses:
+        200:
+          description: Greeting message
+      tags:
+        - ECMWF
+  /list:
+    get:
+      summary: Returns a list of all available files for parsing. 
+      description: |
+        Lists all available grib files that have been downloaded already.
+      responses:
+        200:
+          description: Returns all available filenames
+          schema:
+            $ref: '#/definitions/FileListValue'
+      tags:
+        - ECMWF
+  /retrieve:
+    get:
+      summary: Triggers the retrieval of the grib file for the given date.
+      description: |
+        This method can trigger the download of additional grib files if a date is given that currently is not downloaded. If the user queries an existing file the fileName will be returned immediately.
+      parameters:
+        - name: timestamp
+          in: query
+          description: ISO String timestamp (ex. 2017-09-15T15:21:20%2B00:00)
+          required: true
+          type: string
+          format: date-time
+      tags:
+        - ECMWF
+      responses:
+        200:
+          description: Returns the filename of the file that contains the data for the given date.
+          schema:
+            $ref: '#/definitions/RetrievalReturnValue'
+        404:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /parse/{fileName}:
+      get:
+        summary: parse data from the given grib file.
+        description: |
+          Parses the given file in the URL and searches for data for the latitude, longitude and date given via query parameters.
+        parameters:
+          - name: fileName
+            in: path
+            description: Filename of the grib file we want to check
+            required: true
+            type: string
+          - name: timestamp
+            in: query
+            description: ISO String timestamp (ex. 2017-09-15T15:21:20%2B00:00)
+            required: true
+            type: string
+            format: date-time
+          - name: lat
+            in: query
+            description: Latitude of the location
+            required: true
+            type: number
+          - name: lon
+            in: query
+            description: Longitude of the location
+            required: true
+            type: number
+        tags:
+          - ECMWF
+        responses:
+          200:
+            description: Parses the specified grib files for related values. In turn will return a single object that contains all queried parameters ("PARAM_NAME" is the placeholder to show the structure) that contain an array of ECMWF parameters.
+            schema:
+                $ref: '#/definitions/ParseReturnValue'
+          404:
+            description: Unexpected error
+            schema:
+              $ref: '#/definitions/Error'
+            
+definitions:
+  CopernicusData:
+    type: object
+    properties:
+      index: 
+        type: integer
+      description:
+        type: object
+        properties:
+          dataTime:
+            type: integer
+          name:
+            type: string
+          units:
+            type: string
+          step:
+            type: integer
+          date:
+            type: integer
+          shortName:
+           type: string
+          paramId:
+            type: integer
+          convertedUnit:
+            type: string
+      classification: 
+        type: string
+      distance:
+        type: number
+      longitude: 
+        type: number
+      latitude:
+        type: number
+      value:
+        type: number
+      date:
+        type: string
+      type:
+        type: string
+      
+  FileListValue:
+    type: array
+    items:
+      type: string
+  ParseReturnValue:
+    type: object
+    properties:
+      PARAM_NAME:
+        type: array
+        items:
+          $ref: '#/definitions/CopernicusData'
+        description: name of the retrieved file
+  RetrievalReturnValue:
+    type: object
+    properties:
+      fileName:
+        type: string
+        description: name of the retrieved file
+  Error:
+    type: object
+    properties:
+      message:
+        type: string
