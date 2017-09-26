@@ -1,0 +1,122 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Copernicus API",
+		"_postman_id": "42c50bfc-8e4c-c1cb-628c-9ce9c6c35f81",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Hello Api",
+			"request": {
+				"url": "http://{{host}}:{{port}}/",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve File",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"postman.setEnvironmentVariable(\"file_name\", jsonData.file_name);",
+							"",
+							"",
+							"tests[\"name=\"+jsonData.file_name] = responseCode.code === 200;"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": {
+					"raw": "http://{{host}}:{{port}}/retrieve?timestamp={{timestamp}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"retrieve"
+					],
+					"query": [
+						{
+							"key": "timestamp",
+							"value": "{{timestamp}}",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Parse File for Data",
+			"request": {
+				"url": {
+					"raw": "http://{{host}}:{{port}}/parse/{{file_name}}?timestamp={{timestamp}}&lat={{lat}}&lon={{lon}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"parse",
+						"{{file_name}}"
+					],
+					"query": [
+						{
+							"key": "timestamp",
+							"value": "{{timestamp}}",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "lat",
+							"value": "{{lat}}",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "lon",
+							"value": "{{lon}}",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "List available files",
+			"request": {
+				"url": "http://{{host}}:{{port}}/list",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
