@@ -1,5 +1,6 @@
 from flask import Flask
 from copernicus_api import misc
+from copernicus_api.misc.file_status import file_status
 from copernicus_api.routes.parse_file_route import parse_file_route
 from copernicus_api.routes.index_route import index_route
 from copernicus_api.routes.list_route import list_route
@@ -21,9 +22,6 @@ if __name__ == '__main__':
     misc.directory = args.directory
     misc.init_folder_structure()
     timeout = args.timeout
-    files = misc.get_local_files(misc.directory)
-    # todo: replace this by storing the files available in a database when going into production
-    app.config["files"] = files
 
     # print(app.config["files"])
     app.run(host=args.host, port=args.port, debug=args.debug, threaded=args.threaded)

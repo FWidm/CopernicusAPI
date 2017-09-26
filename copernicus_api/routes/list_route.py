@@ -1,6 +1,9 @@
 from flask import Blueprint, jsonify, app
 
+from copernicus_api import misc
+from copernicus_api.misc.file_status import file_status
+
 list_route = Blueprint('list', __name__)
 @list_route.route('/list')
 def list():
-    return "hello!"
+    return misc.create_response(jsonify(file_status.get_available_files()))

@@ -1,6 +1,4 @@
 import json
-from datetime import datetime, timedelta
-import dateutil
 import os
 from copernicus_retrieval import parser as copernicus_parser
 from copernicus_retrieval.data import copernicus_enums
@@ -8,10 +6,9 @@ from copernicus_retrieval.data.copernicus_data import CopernicusData
 from flask import Blueprint, jsonify, request, Response
 
 from copernicus_api import misc
-# from copernicus_api.flask_sample import cache, directory, timeout, files
 from copernicus_api.misc import cache
 from copernicus_api.misc.settings import directory
-
+from copernicus_api.misc.file_status import file_status
 
 parse_file_route = Blueprint('parse', __name__)
 @parse_file_route.route('/parse/<path:fileName>', methods=['GET'])
@@ -27,7 +24,7 @@ def parse_file(fileName):
     lat = request.args.get('lat')
     lon = request.args.get('lon')
     pathToFile = directory + os.sep + fileName
-    files = misc.get_local_files(directory)
+    files = file_status.get_available_files()
 
     if fileName not in files or not os.path.isfile(pathToFile):
         response = misc.create_response(jsonify(
