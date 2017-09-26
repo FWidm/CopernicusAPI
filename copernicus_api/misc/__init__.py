@@ -29,6 +29,7 @@ def create_response(json, code=200):
     """
     response = json
     response.status_code = code
+    response.mimetype="text/json"
     return response
 
 

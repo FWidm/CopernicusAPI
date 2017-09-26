@@ -6,4 +6,4 @@ from copernicus_api.misc.file_status import file_status
 list_route = Blueprint('list', __name__)
 @list_route.route('/list')
 def list():
-    return misc.create_response(jsonify(file_status.get_available_files()))
+    return misc.create_response(jsonify({'files':file_status.get_available_files()}))

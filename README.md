@@ -18,7 +18,10 @@ Retrieves data from the copernicus server.
         
 
 ## Usage
-TODO
+- Swagger: [doc](doc/CopernicusAPI_swagger.yaml)
+- Postman: 
+    - [collection](doc/Copernicus%20API.postman_collection.json)
+    - [env](doc/Copernicus%20API.postman_environment.json)
 
 ## Tasks
 - Integrate to an SQLite in memory db
