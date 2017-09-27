@@ -100,6 +100,45 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+  '/parse':
+    get:
+      summary: parse data from the given grib file.
+      description: >
+        Determines the file name by using the given date. Uses
+        longitude and date given via query parameters to retrieve the data.
+      parameters:
+        - name: timestamp
+          in: query
+          description: 'ISO String timestamp (ex. 2017-09-15T15:21:20%2B00:00)'
+          required: true
+          type: string
+          format: date-time
+        - name: lat
+          in: query
+          description: Latitude of the location
+          required: true
+          type: number
+        - name: lon
+          in: query
+          description: Longitude of the location
+          required: true
+          type: number
+      tags:
+        - ECMWF
+      responses:
+        '200':
+          description: >-
+            Parses the specified grib files for related values. In turn will
+            return a single object that contains all queried parameters
+            ("PARAM_NAME" is the placeholder to show the structure) that contain
+            an array of ECMWF parameters.
+          schema:
+            $ref: '#/definitions/ParseReturnValue'
+        '404':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
 definitions:
   CopernicusData:
     type: object

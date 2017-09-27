@@ -28,4 +28,9 @@ class FileStatus:
         else:
             return None
 
+    def remove_file(self,file_name):
+        if self.in_files(file_name):
+            self._files.pop(file_name)
+
+
 file_status = FileStatus(settings.directory)

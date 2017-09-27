@@ -8,7 +8,7 @@ from flask import request, Response
 from copernicus_api.misc import cache
 
 
-def parse(path_to_file, point, timestamp):
+def parse(path_to_file, point, date):
     """
     Uses the given parameters to retrieve the requested data from the dataset
     :param path_to_file: path to the file
@@ -16,7 +16,7 @@ def parse(path_to_file, point, timestamp):
     :param timestamp:  iso timestamp
     :return: reponse
     """
-    queriedTimes = copernicus_enums.Time.convert_timestamp_to_times(timestamp)
+    queriedTimes = copernicus_enums.Time.convert_date_to_times(date)
 
     parser = copernicus_parser.Parser()
     result = parser.get_nearest_values(path_to_file, point, parameters=copernicus_enums.ParameterCAMS.all(),

@@ -1,6 +1,5 @@
 import argparse
 import os
-import re
 
 from copernicus_api.misc.settings import directory
 
@@ -10,7 +9,8 @@ def init_folder_structure():
         os.makedirs(directory)
 
 
-
+def  build_file_name(date):
+    return settings.file_prefix+date.date().isoformat()+settings.__file_suffix
 
 
 def create_response(json, code=200):
