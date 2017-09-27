@@ -4,7 +4,7 @@ from copernicus_retrieval.data import copernicus_enums
 from flask import request, jsonify
 
 from copernicus_api import misc
-from copernicus_api.misc import directory
+from copernicus_api.misc import directory, settings
 from copernicus_api.misc import cache
 from copernicus_api.misc.file_status import file_status
 
@@ -17,7 +17,7 @@ def retrieve_file(date_arg):
     """
     dateString = date_arg.strftime(retrieve.Retrieve.DATEFORMAT)
 
-    file_name = "an-" + dateString + ".grib"
+    file_name = settings.file_prefix + dateString + settings.__file_suffix
     path_to_file = directory + os.sep + file_name
 
     # first call only: check if the file exists, if not we can download

@@ -10,14 +10,7 @@ def init_folder_structure():
         os.makedirs(directory)
 
 
-def check_date_string_format(timestamp):
-    """
-    Checks if the timestamp matches the ISO Date format. Source for the regex: https://stackoverflow.com/a/6709493/1496040
-    :param timestamp: string timestamp
-    :return: true if it matches the iso format | false if not
-    """
-    RegEx = re.compile(r'^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$')
-    return bool(RegEx.search(timestamp))
+
 
 
 def create_response(json, code=200):

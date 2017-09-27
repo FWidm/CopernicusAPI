@@ -98,7 +98,6 @@ Subgoals:
   }
   ``` 
 ## Tasks
-- Integrate to an SQLite in memory db
 - OAuth for production
 - Swap Cache for production
 - Allow the user to configure which parameters should be parsed instead of parsing all of them

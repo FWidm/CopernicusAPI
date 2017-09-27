@@ -4,7 +4,7 @@ from copernicus_retrieval.data.copernicus_data import CopernicusData
 from flask import Blueprint, jsonify, request, Response
 
 from copernicus_api import misc
-from copernicus_api.actions import parse_action
+from copernicus_api.actions import parse_action, check_regex_action
 from copernicus_api.misc import cache
 from copernicus_api.misc.settings import directory
 from copernicus_api.misc.file_status import file_status
@@ -54,8 +54,8 @@ def validate_request_parameters(file_name, path_to_file):
     if file_name not in files or not os.path.isfile(path_to_file):
         raise ValueError("Given filename={} could not be found in the available files list={}".format(file_name, files))
 
-    if timestamp is None or timestamp == "" or not misc.check_date_string_format(timestamp):
+    if timestamp is None or timestamp == "" or not check_regex_action.check_iso_string(timestamp):
         raise ValueError(
-            "Timestamp query parameter is required. Please provide it like this: /retrieve?timestamp=2017-09-14T15:21:20%2B00:00")
+            "Timestamp query parameter is required. Please provide it like this: /retrieve?timestamp=2017-09-14T15:21:20%2B00:00. Received string={}".format(timestamp))
 
     return [point, timestamp]
