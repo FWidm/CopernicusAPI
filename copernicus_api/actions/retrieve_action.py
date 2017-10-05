@@ -16,6 +16,14 @@ from copernicus_api.misc.file_status import file_status
 
 
 def download_action(path_to_file, date_arg, data_type, filter_europe):
+    """
+    action to be called within another thread
+    :param path_to_file: path to the downloaded file
+    :param date_arg: date of retrieval
+    :param data_type: where is the data stored
+    :param filter_europe: do we want only european files?
+    :return: Filename if successful, None if an error occurs.
+    """
     file_name = path_to_file.split("/")[-1]
     try:
         r = retrieve.Retrieve()
