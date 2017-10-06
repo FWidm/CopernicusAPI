@@ -9,10 +9,11 @@ from flask import request, jsonify
 from socket import error as socket_error
 
 from copernicus_api import misc
-from copernicus_api.misc import directory, settings
+from copernicus_api.misc import file_directory, settings
 from copernicus_api.misc import cache
 from copernicus_api.misc.executor import executor
 from copernicus_api.misc.file_status import file_status
+from flask import current_app
 
 
 def download_action(path_to_file, date_arg, data_type, filter_europe):
@@ -29,8 +30,8 @@ def download_action(path_to_file, date_arg, data_type, filter_europe):
         r = retrieve.Retrieve()
         result = r.retrieve_file(path_to_file, date=date_arg,
                                  data_type=data_type, filter_europe=filter_europe)
-        print result
-        file_status.mark_available(result.split("/")[-1], directory)
+        current_app.logger.info(result)
+        file_status.mark_available(result.split("/")[-1], file_directory)
     except socket_error, e:
         file_status.remove_file(file_name)
         return None
@@ -45,9 +46,10 @@ def retrieve_file(date_arg):
     :return:  Response object with either the filename or a message
     """
     file_name = misc.build_file_name(date_arg)
-    path_to_file = directory + os.sep + file_name
-    print "{} in files: {}? {}".format(file_name, file_status.get_available_files(), file_status.in_files(file_name))
-    print "{} is available? {}".format(file_name, file_status.is_available(file_name))
+    path_to_file = file_directory + os.sep + file_name
+    current_app.logger.info("{} in files: {}? {}".format(file_name, file_status.get_available_files(), file_status.in_files(file_name)))
+    current_app.logger.info("{} is available? {}".format(file_name, file_status.is_available(file_name)))
+
     # first call only: check if the file exists, if not we can download
     if file_status.is_available(file_name):
         return misc.create_response(jsonify({'file_name': file_name}))
@@ -58,7 +60,7 @@ def retrieve_file(date_arg):
         # retrieve
         future = executor.submit(download_action, path_to_file, date_arg, copernicus_enums.DataType.ANALYSIS, True)
         # todo: check if this query works as expected - we either receive the future's results or can surpass it if the file is available
-        print file_status.is_available(file_name)
+        current_app.logger.info(file_status.is_available(file_name))
         if future.done() or file_status.is_available(file_name):
             # set the cache for the exact query, we might want to filter the hours from the given timestamp so that it matches 2017-09-19T* for example.
             cache.cache.set(request.url.split("T")[0], future.result(), timeout=cache.retrieve_timeout)

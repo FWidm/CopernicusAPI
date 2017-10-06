@@ -8,7 +8,7 @@ from flask import Blueprint, jsonify, request, Response
 from copernicus_api import misc
 from copernicus_api.actions import parse_action, check_regex_action
 from copernicus_api.misc import cache
-from copernicus_api.misc.settings import directory
+from copernicus_api.misc.settings import file_directory
 from copernicus_api.misc.file_status import file_status
 
 parse_file_route = Blueprint('parse', __name__)
@@ -29,7 +29,7 @@ def parse_file_():
         return misc.create_response(jsonify(message=e.message), 400)
 
     file_name = misc.build_file_name(date)
-    path_to_file = directory + os.sep + file_name
+    path_to_file = file_directory + os.sep + file_name
     files = file_status.get_available_files()
 
     if file_name not in files or not os.path.isfile(path_to_file):
@@ -55,7 +55,7 @@ def parse_file(file_name):
     :param fileName: path to a retrieved ecmwf grib file.
     :return: OK including json content or empty not found
     """
-    path_to_file = directory + os.sep + file_name
+    path_to_file = file_directory + os.sep + file_name
     try:
         [point, date] = validate_request_parameters()
     except ValueError, e:

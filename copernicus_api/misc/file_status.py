@@ -33,4 +33,4 @@ class FileStatus:
             self._files.pop(file_name)
 
 
-file_status = FileStatus(settings.directory)
+file_status = FileStatus(settings.file_directory)

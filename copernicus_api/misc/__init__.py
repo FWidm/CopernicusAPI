@@ -1,16 +1,18 @@
 import argparse
 import os
 
-from copernicus_api.misc.settings import directory
+import errno
+
+from copernicus_api.misc.settings import file_directory
 
 
-def init_folder_structure():
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-
-def  build_file_name(date):
-    return settings.file_prefix+date.date().isoformat()+settings.__file_suffix
+def build_file_name(date):
+    """
+    Builds the resulting grib file by appending the date in isoformat to the prefix and adding the file suffix afterwards
+    :param date: requested date
+    :return: filename string
+    """
+    return settings.file_prefix + date.date().isoformat() + settings.__file_suffix
 
 
 def create_response(json, code=200):
@@ -22,18 +24,15 @@ def create_response(json, code=200):
     """
     response = json
     response.status_code = code
-    response.mimetype="text/json"
+    response.mimetype = "text/json"
     return response
 
 
-def get_local_files(directory):
-    files = [f for f in os.listdir(directory) if
-             os.path.isfile(directory + os.sep + f) and not f.startswith(".") and f.endswith(".grib")]
-    print files
-    return files
-
-
 def get_cli_arguments():
+    """
+    Parses the 6 required parameters "directory" that specifies the storage directory, "host", "port", "threaded":bool, "debug":bool, "timeout": for caches in seconds.
+    :return: parsed arguments
+    """
     parser = argparse.ArgumentParser("flask_sample.py")
     parser.add_argument("directory", help="Storage directory of the copernicus data", type=str)
     parser.add_argument("host", help="Host", type=str)
@@ -42,3 +41,17 @@ def get_cli_arguments():
     parser.add_argument("debug", help="Should the flask instance run in debug mode or not", type=bool)
     parser.add_argument("timeout", help="Cache timeout in seconds", type=int, default=60 * 60)
     return parser.parse_args()
+
+
+def make_directories(directory_path):
+    """
+    Recursively create required directories if they do not exist.
+    :param directory_path: path/to/directory
+    """
+    try:
+        os.makedirs(directory_path)
+    except OSError as e:
+        if e.errno == errno.EEXIST and os.path.isdir(directory_path):
+            pass
+        else:
+            raise
