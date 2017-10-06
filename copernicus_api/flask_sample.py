@@ -27,7 +27,7 @@ if __name__ == '__main__':
     misc.make_directories(settings.logging_directory)
     misc.make_directories(settings.file_directory)
 
-    formatter = logging.Formatter("[%(asctime)s] - %(levelname)s: %(message)s",datefmt=settings.date_format)
+    formatter = logging.Formatter(settings.log_format,datefmt=settings.date_format)
 
     handler = RotatingFileHandler(settings.logging_directory+sep+'copernicus_api.log', maxBytes=10000, backupCount=1)
     handler.setFormatter(formatter)
