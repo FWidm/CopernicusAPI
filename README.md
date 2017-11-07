@@ -102,4 +102,4 @@ Subgoals:
 - Swap Cache for production
 - Allow the user to configure which parameters should be parsed instead of parsing all of them
 - Maybe: Customize retrieval to save bandwidth - which will in turn make data management harder.
-
+- Check if a download is taking too long, cancel the future in that case.

@@ -63,7 +63,7 @@ def parse_file(file_name):
 
     files = file_status.get_available_files()
     if file_name not in files or not os.path.isfile(path_to_file):
-        raise ValueError("Given filename={} could not be found in the available files list={}".format(file_name, files))
+        return Response("Given filename={} could not be found in the available files list={}".format(file_name, files),mimetype="text/json",status=404)
 
     response = cache.cache.get(request.url)
     # check cache

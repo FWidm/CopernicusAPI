@@ -30,12 +30,11 @@ def download_action(path_to_file, date_arg, data_type, filter_europe):
         r = retrieve.Retrieve()
         result = r.retrieve_file(path_to_file, date=date_arg,
                                  data_type=data_type, filter_europe=filter_europe)
-        current_app.logger.info(result)
+        # mark the file as retrieved
         file_status.mark_available(result.split("/")[-1], file_directory)
     except socket_error, e:
         file_status.remove_file(file_name)
         return None
-    # mark the file as retrieved
     return result
 
 
@@ -57,7 +56,7 @@ def retrieve_file(date_arg):
     elif not file_status.in_files(file_name):
         # mark file as in progress by adding it to the files.
         file_status.add_file(file_name)
-        # retrieve
+        # retrieve via executor
         future = executor.submit(download_action, path_to_file, date_arg, copernicus_enums.DataType.ANALYSIS, True)
         # todo: check if this query works as expected - we either receive the future's results or can surpass it if the file is available
         current_app.logger.info(file_status.is_available(file_name))
@@ -65,7 +64,6 @@ def retrieve_file(date_arg):
             # set the cache for the exact query, we might want to filter the hours from the given timestamp so that it matches 2017-09-19T* for example.
             cache.cache.set(request.url.split("T")[0], future.result(), timeout=cache.retrieve_timeout)
             return misc.create_response(jsonify({'file_name': future.result().split("/")[-1]}))
-
     # default response will be the download message
     return misc.create_response(jsonify({
         'message': 'Download is currently in progress. Retry this operation to retrieve the filename in a minute.'}),
