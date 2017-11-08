@@ -32,7 +32,7 @@ def download_action(path_to_file, date_arg, data_type, filter_europe):
                                  data_type=data_type, filter_europe=filter_europe)
         # mark the file as retrieved
         file_status.mark_available(result.split("/")[-1], file_directory)
-    except socket_error, e:
+    except (socket_error, RuntimeError) as e:
         file_status.remove_file(file_name)
         return None
     return result
