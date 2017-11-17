@@ -33,9 +33,9 @@ def parse_file_():
     files = file_status.get_available_files()
 
     if file_name not in files or not os.path.isfile(path_to_file):
-        return misc.create_response(jsonify(
-            message="Given filename={} could not be found in the available files list={}".format(file_name, files)),
-                                    200)
+        return misc.create_response(jsonify({
+            'message': 'Given filename={} could not be found in the available files are attached.'.format(file_name, files),
+            'available_files': files}), 404)
 
     response = cache.cache.get(request.url)
     # check cache
@@ -63,7 +63,9 @@ def parse_file(file_name):
 
     files = file_status.get_available_files()
     if file_name not in files or not os.path.isfile(path_to_file):
-        return Response("Given filename={} could not be found in the available files list={}".format(file_name, files),mimetype="text/json",status=404)
+        return misc.create_response(jsonify({
+            'message': 'Given filename={} could not be found in the available files list={}'.format(file_name, files),
+            'available_files': files}), 404)
 
     response = cache.cache.get(request.url)
     # check cache
