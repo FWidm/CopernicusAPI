@@ -40,8 +40,8 @@ def retrieve_copernicus_file():
         result = retrieve_action.retrieve_file(date_arg)
         return misc.create_response(jsonify(transform(result).data))
     else:
-        return misc.create_response(jsonify(
-            message="Cannot retrieve files for this date.",latest_retrival_date=latestRetrievalDate.date().isoformat()))
+        msg={'message':"Cannot retrieve files for this date.", 'data':{'latest_retrieval_date':latestRetrievalDate.date().isoformat()}}
+        return misc.create_response(jsonify(transform(msg).data),404)
 
 
 def validate_request_parameters():
