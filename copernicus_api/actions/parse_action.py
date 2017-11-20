@@ -21,7 +21,7 @@ def parse(path_to_file, point, date):
     parser = copernicus_parser.Parser()
     result = parser.get_nearest_values(path_to_file, point, parameters=copernicus_enums.ParameterCAMS.all(),
                                        times=queriedTimes)
+
     # put the result in the cache with the normal timeout
     cache.cache.set(request.url, result, cache.timeout)
-    return Response(json.dumps(result, default=CopernicusData.json_serial, indent=2), mimetype="text/json",
-                    status=200)
+    return result

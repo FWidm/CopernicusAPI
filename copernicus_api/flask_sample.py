@@ -7,7 +7,7 @@ from copernicus_api import misc
 from copernicus_api.misc import settings
 from copernicus_api.routes.parse_file_route import parse_file_route
 from copernicus_api.routes.index_route import index_route
-from copernicus_api.routes.list_route import list_route
+from copernicus_api.routes.files_route import files_route
 from copernicus_api.routes.retrieve_file_route import retrieve_file_route
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 # Blueprints
 app.register_blueprint(index_route)
-app.register_blueprint(list_route)
+app.register_blueprint(files_route)
 app.register_blueprint(retrieve_file_route)
 app.register_blueprint(parse_file_route)
 

@@ -51,7 +51,8 @@ def retrieve_file(date_arg):
 
     # first call only: check if the file exists, if not we can download
     if file_status.is_available(file_name):
-        return misc.create_response(jsonify({'file_name': file_name}))
+        cache.cache.set(request.url.split("T")[0], file_name, timeout=cache.retrieve_timeout)
+        return {'message': 'File is available.', 'data': {'file_name': file_name.split("/")[-1]}}
     # file is not available AND not in files (in progress)
     elif not file_status.in_files(file_name):
         # mark file as in progress by adding it to the files.
@@ -63,8 +64,6 @@ def retrieve_file(date_arg):
         if future.done() or file_status.is_available(file_name):
             # set the cache for the exact query, we might want to filter the hours from the given timestamp so that it matches 2017-09-19T* for example.
             cache.cache.set(request.url.split("T")[0], future.result(), timeout=cache.retrieve_timeout)
-            return misc.create_response(jsonify({'file_name': future.result().split("/")[-1]}))
+            return {'message':'File is available.','data': {'file_name':file_name.split("/")[-1]}}
     # default response will be the download message
-    return misc.create_response(jsonify({
-        'message': 'Download is currently in progress. Retry this operation to retrieve the filename in a minute.'}),
-        202)
+    return {'message': 'Download is currently in progress. Retry this operation to retrieve the filename in a minute.'}

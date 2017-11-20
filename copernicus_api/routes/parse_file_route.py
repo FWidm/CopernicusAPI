@@ -10,6 +10,8 @@ from copernicus_api.actions import parse_action, check_regex_action
 from copernicus_api.misc import cache
 from copernicus_api.misc.settings import file_directory
 from copernicus_api.misc.file_status import file_status
+from copernicus_api.schemas.copernicus_data_schema import CopernicusDataSchema
+from copernicus_api.schemas.message_schema import MessageSchema
 
 parse_file_route = Blueprint('parse', __name__)
 
@@ -33,47 +35,34 @@ def parse_file_():
     files = file_status.get_available_files()
 
     if file_name not in files or not os.path.isfile(path_to_file):
-        return misc.create_response(jsonify({
-            'message': 'Given filename={} could not be found in the available files are attached.'.format(file_name, files),
-            'available_files': files}), 404)
+        msg = {'message': 'Given filename={} could not be found in the available files are attached.'.format(file_name,
+                                                                                                             files),
+               'data': {'files': files}}
+        return misc.create_response(jsonify(transform_message(msg).data), 404)
 
-    response = cache.cache.get(request.url)
+    result = cache.cache.get(request.url)
     # check cache
-    if response:  # got cache result
-        return Response(json.dumps(response, default=CopernicusData.json_serial, indent=2), mimetype="text/json",
-                        status=200)
+    if not result:
+        result = parse_action.parse(path_to_file, point, date)
+    return Response(json.dumps(transform(result), default=CopernicusData.json_serial, indent=2), mimetype="text/json",
+                    status=200)
 
-    return parse_action.parse(path_to_file, point, date)
+
+def transform(result):
+    # refer to: http://marshmallow.readthedocs.io/en/latest/quickstart.html#filtering-output to filter the output
+    # Only output the type and value!
+    # schema = CopernicusDataSchema(many=True,only=('type','value'))
+    schema = CopernicusDataSchema(many=True)
+
+    for key in result:
+        print key
+        result[key] = schema.dump(result[key]).data
+    return result
 
 
-@parse_file_route.route('/parse/<path:file_name>', methods=['GET'])
-def parse_file(file_name):
-    """
-    Retrieves the parsed information  by specifying the file, the timestamp and latitude + longitude. Don't forget
-    to encode the plus sign '+' = %2B!
-    Example: GET /parse/data/ecmwf/an-2017-09-14.grib?timestamp=2017-09-16T15:21:20%2B00:00&lat=48.398400&lon=9.591550
-    :param fileName: path to a retrieved ecmwf grib file.
-    :return: OK including json content or empty not found
-    """
-    path_to_file = file_directory + os.sep + file_name
-    try:
-        [point, date] = validate_request_parameters()
-    except ValueError, e:
-        return misc.create_response(jsonify(message=e.message), 400)
-
-    files = file_status.get_available_files()
-    if file_name not in files or not os.path.isfile(path_to_file):
-        return misc.create_response(jsonify({
-            'message': 'Given filename={} could not be found in the available files list={}'.format(file_name, files),
-            'available_files': files}), 404)
-
-    response = cache.cache.get(request.url)
-    # check cache
-    if response:  # got cache result
-        return Response(json.dumps(response, default=CopernicusData.json_serial, indent=2), mimetype="text/json",
-                        status=200)
-
-    return parse_action.parse(path_to_file, point, date)
+def transform_message(msg):
+    schema = MessageSchema()
+    return schema.dump(msg)
 
 
 def validate_request_parameters():
@@ -98,3 +87,33 @@ def validate_request_parameters():
                 timestamp))
 
     return [point, dateutil.parser.parse(timestamp).replace(tzinfo=None)]
+
+# uncomment if you need this route to also have the filename on it!
+# @parse_file_route.route('/parse/<path:file_name>', methods=['GET'])
+# def parse_file(file_name):
+#     """
+#     Retrieves the parsed information  by specifying the file, the timestamp and latitude + longitude. Don't forget
+#     to encode the plus sign '+' = %2B!
+#     Example: GET /parse/data/ecmwf/an-2017-09-14.grib?timestamp=2017-09-16T15:21:20%2B00:00&lat=48.398400&lon=9.591550
+#     :param fileName: path to a retrieved ecmwf grib file.
+#     :return: OK including json content or empty not found
+#     """
+#     path_to_file = file_directory + os.sep + file_name
+#     try:
+#         [point, date] = validate_request_parameters()
+#     except ValueError, e:
+#         return misc.create_response(jsonify(message=e.message), 400)
+#
+#     files = file_status.get_available_files()
+#     if file_name not in files or not os.path.isfile(path_to_file):
+#         return misc.create_response(jsonify({
+#             'message': 'Given filename={} could not be found in the available files list={}'.format(file_name, files),
+#             'available_files': files}), 404)
+#
+#     response = cache.cache.get(request.url)
+#     # check cache
+#     if response:  # got cache result
+#         return Response(json.dumps(response, default=CopernicusData.json_serial, indent=2), mimetype="text/json",
+#                         status=200)
+#
+#     return parse_action.parse(path_to_file, point, date)

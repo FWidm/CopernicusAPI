@@ -18,7 +18,7 @@ paths:
           description: Greeting message
       tags:
         - ECMWF
-  /list:
+  /files:
     get:
       summary: Returns a list of all available files for parsing.
       description: |
