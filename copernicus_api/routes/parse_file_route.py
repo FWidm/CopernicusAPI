@@ -55,7 +55,6 @@ def transform(result):
     schema = CopernicusDataSchema(many=True)
 
     for key in result:
-        print key
         result[key] = schema.dump(result[key]).data
     return result
 

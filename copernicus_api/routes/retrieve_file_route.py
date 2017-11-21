@@ -25,9 +25,7 @@ def retrieve_copernicus_file():
     except ValueError, e:
         return misc.create_response(jsonify(message=e.message), 400)
 
-    print request.url.split("T")[0]
     response = cache.cache.get(request.url.split("T")[0])
-    print response
     # check cache hit
     if response:
         # transform

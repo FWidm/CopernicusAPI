@@ -30,7 +30,8 @@ Subgoals:
 - Postman: 
     - [collection](doc/Copernicus%20API.postman_collection.json)
     - [env](doc/Copernicus%20API.postman_environment.json)
-    
+- Status of Requests:
+    - [MARS activity - ECMWF](http://apps.ecmwf.int/mars-activity/)
 ## Usage 
 - Stat the server with the required paramters: storage location (relative to flask_sample.py), host, port, Debugging enabled, Multithreading enabled, cache timeout in seconds:
     - `python flask_sample.py ../data/ecmwf 0.0.0.0 5055 True True 3600`
