@@ -1,19 +1,28 @@
 {
-	"variables": [],
 	"info": {
 		"name": "Copernicus API",
 		"_postman_id": "42c50bfc-8e4c-c1cb-628c-9ce9c6c35f81",
-		"description": "",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+		"description": "Wrapper tha retrieves data from the copernicus (ECMWF) data.\n\nSee [Github](https://github.com/FWidm/CopernicusAPI)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "Hello Api",
 			"request": {
-				"url": "http://{{host}}:{{port}}/",
 				"method": "GET",
 				"header": [],
 				"body": {},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						""
+					]
+				},
 				"description": ""
 			},
 			"response": []
@@ -37,8 +46,11 @@
 				}
 			],
 			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
 				"url": {
-					"raw": "http://{{host}}:{{port}}/retrieve?timestamp={{timestamp}}",
+					"raw": "http://{{host}}:{{port}}/retrieve?timestamp={{date_timestamp}}",
 					"protocol": "http",
 					"host": [
 						"{{host}}"
@@ -50,73 +62,95 @@
 					"query": [
 						{
 							"key": "timestamp",
-							"value": "{{timestamp}}",
-							"equals": true,
-							"description": ""
+							"value": "{{date_timestamp}}",
+							"equals": true
 						}
-					],
-					"variable": []
+					]
 				},
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "Parse File for Data",
-			"request": {
-				"url": {
-					"raw": "http://{{host}}:{{port}}/parse/{{file_name}}?timestamp={{timestamp}}&lat={{lat}}&lon={{lon}}",
-					"protocol": "http",
-					"host": [
-						"{{host}}"
-					],
-					"port": "{{port}}",
-					"path": [
-						"parse",
-						"{{file_name}}"
-					],
-					"query": [
-						{
-							"key": "timestamp",
-							"value": "{{timestamp}}",
-							"equals": true,
-							"description": ""
-						},
-						{
-							"key": "lat",
-							"value": "{{lat}}",
-							"equals": true,
-							"description": ""
-						},
-						{
-							"key": "lon",
-							"value": "{{lon}}",
-							"equals": true,
-							"description": ""
-						}
-					],
-					"variable": []
-				},
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"description": ""
+				"description": "Attributes:\n- `timestamp`: Y-m-d format\n\nResponses:\n- 200: {message & data.file_name} - if a file is not available currently, a download is triggered & the user informed\n- 400: happens when the date_timestamp cannot be parsed\n- 404: file is not available for downloading - also contains the latest retrieval date"
 			},
 			"response": []
 		},
 		{
 			"name": "List available files",
 			"request": {
-				"url": "http://{{host}}:{{port}}/list",
 				"method": "GET",
 				"header": [],
 				"body": {},
-				"description": ""
+				"url": {
+					"raw": "http://{{host}}:{{port}}/files",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"files"
+					]
+				},
+				"description": "Responses:\n- 200: {data: array of file names, message}"
 			},
 			"response": []
+		},
+		{
+			"name": "Parse File by Date for Data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/parse?timestamp={{timestamp}}&lat={{lat}}&lon={{lon}}",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"parse"
+					],
+					"query": [
+						{
+							"key": "timestamp",
+							"value": "{{timestamp}}",
+							"equals": true
+						},
+						{
+							"key": "lat",
+							"value": "{{lat}}",
+							"equals": true
+						},
+						{
+							"key": "lon",
+							"value": "{{lon}}",
+							"equals": true
+						}
+					]
+				},
+				"description": "Attributes:\n- timestamp: ISO format\n- lat: decimal\n- lon: decimal\n\nResponses:\n- 200: all available parameters near the given timestamp. {'type_key':array}\n- 404: File is not available, lists available files - timestamps relate to the filenames (e.g. if you need data for 2017-11-10 - the file is named an-2017-11-10.grib\")"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "a14a3864-2b70-46fc-b260-4721f34cc0e5",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "7ef54916-1ca3-4d25-a16e-1625fe28d9bc",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
