@@ -51,7 +51,7 @@ def parse_file_():
 def transform(result):
     # refer to: http://marshmallow.readthedocs.io/en/latest/quickstart.html#filtering-output to filter the output
     # Only output the type and value!
-    # schema = CopernicusDataSchema(many=True,only=('type','value'))
+    #schema = CopernicusDataSchema(many=True,only=('type','value'))
     schema = CopernicusDataSchema(many=True)
 
     for key in result:
